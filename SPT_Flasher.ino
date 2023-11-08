@@ -9,12 +9,12 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const int potPin = A0;    // Connect potentiometer pin to A0 on NodeMCU
-const int trigPin = D4;   // Connect HC-SR04 trig pin to D4 on NodeMCU
-const int echoPin = D5;   // Connect HC-SR04 echo pin to D5 on NodeMCU
-const int flashPin = D6;  // Connect Tomar power supply trigger pin to D6 on NodeMCU
+const int us_trigPin = D4;   // Connect HC-SR04 trig pin to D4 on NodeMCU
+const int us_echoPin = D5;   // Connect HC-SR04 echo pin to D5 on NodeMCU
+const int flash_Pin = D6;  // Connect Tomar power supply trigger pin to D6 on NodeMCU
 
-int flashTriggerPulseDuration = 50;  // Initial flash trigger pulse duration in milliseconds. Tomer requires min 25 ms.
-int flashTriggerValue = 50;          // Initial flash trigger value in cm
+int flash_TriggerPulseDuration = 50;  // Initial flash trigger pulse duration in milliseconds. Tomer requires min 25 ms.
+int flash_TriggerValue = 50;          // Initial flash trigger value in cm
 
 void setup() {
   // Initialize the OLED screen
@@ -35,12 +35,12 @@ void setup() {
   Serial.begin(9600);
 
   // Initialize the HC-SR04 pins
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  pinMode(us_trigPin, OUTPUT);
+  pinMode(us_echoPin, INPUT);
 
   // Configure the flash pin as an output and set it low to deactivate the relay by default
-  pinMode(flashPin, OUTPUT);
-  digitalWrite(flashPin, HIGH);
+  pinMode(flash_Pin, OUTPUT);
+  digitalWrite(flash_Pin, HIGH);
 
   display.clearDisplay();
   display.display();
@@ -48,28 +48,28 @@ void setup() {
 
 void loop() {
   // Read the potentiometer value to set the flash trigger value
-  int potValue = analogRead(potPin);
-  flashTriggerValue = map(potValue, 0, 1023, 50, 400);
+  int potTriggerValue = analogRead(potPin);
+  flash_TriggerValue = map(potTriggerValue, 0, 1023, 50, 400);
 
   // Measure distance using HC-SR04
-  long duration;
-  float distance;
+  long us_duration;
+  float us_distance;
   int roundedDistance;
 
-  digitalWrite(trigPin, LOW);
+  digitalWrite(us_trigPin, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(us_trigPin, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
-  distance = (duration / 2.0) / 29.1;  // Calculate distance in centimeters
-  roundedDistance = round(distance);
+  digitalWrite(us_trigPin, LOW);
+  us_duration = pulseIn(us_echoPin, HIGH);
+  us_distance = (us_duration / 2.0) / 29.1;  // Calculate distance in centimeters
+  roundedDistance = round(us_distance);
 
   // Print both potentiometer and distance values to the OLED screen
   display.clearDisplay();
   display.setCursor(0, 0);
   display.print("Trigger: ");
-  display.print(potValue);
+  display.print(potTriggerValue);
   display.println(" cm");
   display.print("Distance: ");
   display.print(roundedDistance);
@@ -78,14 +78,14 @@ void loop() {
 
   // Print both potentiometer and distance values to the serial monitor
   Serial.print("Trigger: ");
-  Serial.println(potValue);
-    Serial.println(" cm");
+  Serial.println(potTriggerValue);
+  Serial.println(" cm");
   Serial.print("Distance: ");
   Serial.print(roundedDistance);
   Serial.println(" cm");
 
   // Check if the measured distance is less than or equal to the flash trigger value
-  if (roundedDistance <= flashTriggerValue) {
+  if (roundedDistance <= flash_TriggerValue) {
     flash();  // Call the flash function
   }
 
@@ -100,12 +100,12 @@ void flash() {
   display.display();
 
   // Set the flash pin high to activate the relay
-  digitalWrite(flashPin, LOW);
+  digitalWrite(flash_Pin, LOW);
 
-  delay(flashTriggerPulseDuration);  // Delay for the specified pulse duration
+  delay(flash_TriggerPulseDuration);  // Delay for the specified pulse duration
 
   // Set the flash pin back to low to deactivate the relay
-  digitalWrite(flashPin, HIGH);
+  digitalWrite(flash_Pin, HIGH);
 
   display.clearDisplay();
   display.display();
