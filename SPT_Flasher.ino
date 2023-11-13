@@ -9,15 +9,6 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const int potPin = A0;  // Connect potentiometer pin to A0 on NodeMCU
-//D1 SCL pin for I2C communication
-//D2 SDA pin for I2C communication
-
-/*
-const int us_trigPin = D4;   // Connect HC-SR04 trig pin to D4 on NodeMCU
-const int us_echoPin = D5;   // Connect HC-SR04 echo pin to D5 on NodeMCU
-const int flash_Pin = D6;  // Connect Tomar power supply trigger pin to D6 on NodeMCU
-*/
-
 const int us_trigPin = D6;  // Connect HC-SR04 trig pin / Red
 const int us_echoPin = D5;  // Connect HC-SR04 echo pin / Green
 const int flash_Pin = D4;   // Connect Tomar power supply trigger pin / Green
