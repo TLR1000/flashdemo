@@ -8,13 +8,23 @@
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-const int potPin = A0;    // Connect potentiometer pin to A0 on NodeMCU
+const int potPin = A0;  // Connect potentiometer pin to A0 on NodeMCU
+//D1 SCL pin for I2C communication
+//D2 SDA pin for I2C communication
+
+/*
 const int us_trigPin = D4;   // Connect HC-SR04 trig pin to D4 on NodeMCU
 const int us_echoPin = D5;   // Connect HC-SR04 echo pin to D5 on NodeMCU
 const int flash_Pin = D6;  // Connect Tomar power supply trigger pin to D6 on NodeMCU
+*/
 
-int flash_TriggerPulseDuration = 50;  // Initial flash trigger pulse duration in milliseconds. Tomer requires min 25 ms.
-int flash_TriggerValue = 50;          // Initial flash trigger value in cm
+const int us_trigPin = D6;  // Connect HC-SR04 trig pin / Red
+const int us_echoPin = D5;  // Connect HC-SR04 echo pin / Green
+const int flash_Pin = D4;   // Connect Tomar power supply trigger pin / Green
+
+int flash_TriggerPulseDuration = 30;  // Initial flash trigger pulse duration in milliseconds. Tomer requires min 25 ms.
+int flash_TriggerValue = 10;          // Initial flash trigger value in cm
+int flash_ChargePumpDelay = 500;      // ms needed for recharging the lamp
 
 void setup() {
   // Initialize the OLED screen
@@ -40,7 +50,7 @@ void setup() {
 
   // Configure the flash pin as an output and set it low to deactivate the relay by default
   pinMode(flash_Pin, OUTPUT);
-  digitalWrite(flash_Pin, HIGH);
+  digitalWrite(flash_Pin, LOW);  //pin is high by default
 
   display.clearDisplay();
   display.display();
@@ -99,13 +109,12 @@ void flash() {
   display.println("FLASH");  // Print 'FLASH' to the OLED screen
   display.display();
 
-  // Set the flash pin high to activate the relay
-  digitalWrite(flash_Pin, LOW);
-
+  //Trigger the flash
+  digitalWrite(flash_Pin, HIGH);      // Set the flash pin
   delay(flash_TriggerPulseDuration);  // Delay for the specified pulse duration
+  digitalWrite(flash_Pin, LOW);       // Set the flash pin
 
-  // Set the flash pin back to low to deactivate the relay
-  digitalWrite(flash_Pin, HIGH);
+  delay(flash_ChargePumpDelay);  // Delay for recharge and return
 
   display.clearDisplay();
   display.display();
